@@ -1,0 +1,13 @@
+{
+  "name": "playtester",
+  "version": "1.0.0",
+  "main": "code.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "TODO x Index to img name x Draw from deck into hand button x Preview hand card on hover x Move card from hand onto field x Move card from field into discard x Move card from field into claimed x Move card from field into deck x Remove test cards x Update board stat when moving cards - Button to shuffle deck - Button to move all cards back into the deck and shuffle",
+  "dependencies": {},
+  "devDependencies": {}
+}

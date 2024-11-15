@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squirmish Playtester</title>
+    <link rel="icon" href="data:;base64,=">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.8.2.10.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar to display the larger image preview and areas for card actions -->
+    <div class="sidebar">
+        <!-- Preview image at the top -->
+        <img id="previewImage" src="" alt="Image Preview">
+        
+        <!-- Areas for dragging cards -->
+        <div class="card-area" id="deckArea">
+            <h3>Deck <span id="deckCount">0</span></h3>
+            <button onclick="drawCard()">Draw</button>
+            <button onclick="shuffleDeck()">Shuffle</button>
+        </div>
+        <div class="card-area" id="discardArea">
+            <h3>Discard <span id="discardCount">0</span></h3>
+        </div>
+        <div class="card-area" id="handArea">
+            <h3>Hand <span id="handCount">0</span></h3>
+        </div>
+        <div class="card-area" id="claimedArea">
+            <h3>Claimed <span id="claimedCount">0</span></h3>
+        </div>
+
+        <!-- Text area to display accumulated information -->
+        <!--<textarea id="infoArea" rows="8" readonly>Lobby Start</textarea>-->
+    </div>
+
+    <div class="button-container">
+        <button onclick="resetGame()">Reset</button>
+        <img src="logo.png"/>
+    </div>
+
+    <div class="grid-container">
+        <!-- Generate 100 blank cells -->
+        <!-- Each div is an empty cell with drag-and-drop functionality -->
+        <div class="grid-cell" id="1,1"></div>
+        <div class="grid-cell" id="2,1"></div>
+        <div class="grid-cell" id="3,1"></div>
+        <div class="grid-cell" id="4,1"></div>
+        <div class="grid-cell" id="5,1"></div>
+        <div class="grid-cell" id="6,1"></div>
+        <div class="grid-cell" id="7,1"></div>
+        <div class="grid-cell" id="8,1"></div>
+        <div class="grid-cell" id="9,1"></div>
+        <div class="grid-cell" id="10,1"></div>
+        <div class="grid-cell" id="1,2"></div>
+        <div class="grid-cell" id="2,2"></div>
+        <div class="grid-cell" id="3,2"></div>
+        <div class="grid-cell" id="4,2"></div>
+        <div class="grid-cell" id="5,2"></div>
+        <div class="grid-cell" id="6,2"></div>
+        <div class="grid-cell" id="7,2"></div>
+        <div class="grid-cell" id="8,2"></div>
+        <div class="grid-cell" id="9,2"></div>
+        <div class="grid-cell" id="10,2"></div>
+        <div class="grid-cell" id="1,3"></div>
+        <div class="grid-cell" id="2,3"></div>
+        <div class="grid-cell" id="3,3"></div>
+        <div class="grid-cell" id="4,3"></div>
+        <div class="grid-cell" id="5,3"></div>
+        <div class="grid-cell" id="6,3"></div>
+        <div class="grid-cell" id="7,3"></div>
+        <div class="grid-cell" id="8,3"></div>
+        <div class="grid-cell" id="9,3"></div>
+        <div class="grid-cell" id="10,3"></div>
+        <div class="grid-cell" id="1,4"></div>
+        <div class="grid-cell" id="2,4"></div>
+        <div class="grid-cell" id="3,4"></div>
+        <div class="grid-cell" id="4,4"></div>
+        <div class="grid-cell" id="5,4"></div>
+        <div class="grid-cell" id="6,4"></div>
+        <div class="grid-cell" id="7,4"></div>
+        <div class="grid-cell" id="8,4"></div>
+        <div class="grid-cell" id="9,4"></div>
+        <div class="grid-cell" id="10,4"></div>
+        <div class="grid-cell" id="1,5"></div>
+        <div class="grid-cell" id="2,5"></div>
+        <div class="grid-cell" id="3,5"></div>
+        <div class="grid-cell" id="4,5"></div>
+        <div class="grid-cell" id="5,5"></div>
+        <div class="grid-cell" id="6,5"></div>
+        <div class="grid-cell" id="7,5"></div>
+        <div class="grid-cell" id="8,5"></div>
+        <div class="grid-cell" id="9,5"></div>
+        <div class="grid-cell" id="10,5"></div>
+        <div class="grid-cell" id="1,6"></div>
+        <div class="grid-cell" id="2,6"></div>
+        <div class="grid-cell" id="3,6"></div>
+        <div class="grid-cell" id="4,6"></div>
+        <div class="grid-cell" id="5,6"></div>
+        <div class="grid-cell" id="6,6"></div>
+        <div class="grid-cell" id="7,6"></div>
+        <div class="grid-cell" id="8,6"></div>
+        <div class="grid-cell" id="9,6"></div>
+        <div class="grid-cell" id="10,6"></div>
+        <div class="grid-cell" id="1,7"></div>
+        <div class="grid-cell" id="2,7"></div>
+        <div class="grid-cell" id="3,7"></div>
+        <div class="grid-cell" id="4,7"></div>
+        <div class="grid-cell" id="5,7"></div>
+        <div class="grid-cell" id="6,7"></div>
+        <div class="grid-cell" id="7,7"></div>
+        <div class="grid-cell" id="8,7"></div>
+        <div class="grid-cell" id="9,7"></div>
+        <div class="grid-cell" id="10,7"></div>
+        <div class="grid-cell" id="1,8"></div>
+        <div class="grid-cell" id="2,8"></div>
+        <div class="grid-cell" id="3,8"></div>
+        <div class="grid-cell" id="4,8"></div>
+        <div class="grid-cell" id="5,8"></div>
+        <div class="grid-cell" id="6,8"></div>
+        <div class="grid-cell" id="7,8"></div>
+        <div class="grid-cell" id="8,8"></div>
+        <div class="grid-cell" id="9,8"></div>
+        <div class="grid-cell" id="10,8"></div>
+        <div class="grid-cell" id="1,9"></div>
+        <div class="grid-cell" id="2,9"></div>
+        <div class="grid-cell" id="3,9"></div>
+        <div class="grid-cell" id="4,9"></div>
+        <div class="grid-cell" id="5,9"></div>
+        <div class="grid-cell" id="6,9"></div>
+        <div class="grid-cell" id="7,9"></div>
+        <div class="grid-cell" id="8,9"></div>
+        <div class="grid-cell" id="9,9"></div>
+        <div class="grid-cell" id="10,9"></div>
+        <div class="grid-cell" id="1,10"></div>
+        <div class="grid-cell" id="2,10"></div>
+        <div class="grid-cell" id="3,10"></div>
+        <div class="grid-cell" id="4,10"></div>
+        <div class="grid-cell" id="5,10"></div>
+        <div class="grid-cell" id="6,10"></div>
+        <div class="grid-cell" id="7,10"></div>
+        <div class="grid-cell" id="8,10"></div>
+        <div class="grid-cell" id="9,10"></div>
+        <div class="grid-cell" id="10,10"></div>
+    </div>
+
+    <div class="sidebar small">
+        <!-- Text area to display accumulated information -->
+        <textarea id="infoArea" rows="8" readonly>Lobby Start</textarea>
+    </div>
+
+    <div id="userList"></div>
+
+    <script src="network.js"></script>
+    <script src="code.js"></script>
+</body>
+</html>
