@@ -22,16 +22,18 @@ function setupPubNub() {
             switch (m.action) {
                 case 'join':
                     logAction(`${m.uuid.slice(-5)} network ${m.action}`, false);
-                    pubnub.setState({
-                        state: {
-                            time: Date.now(),
-                        },
-                        channels: [channelName],
-                    });
                     if (m.uuid !== myId) sendGameState();
                 case'state-change':
                     if (!userList.includes(m.uuid)) {
                         userList.push(m.uuid);
+
+                        pubnub.setState({
+                            state: {
+                                uuid: myId,
+                                time: Date.now(),
+                            },
+                            channels: [channelName],
+                        });
                     }
                     break;
                 case 'leave':
@@ -40,6 +42,14 @@ function setupPubNub() {
                         userList.splice(userList.indexOf(m.uuid), 1);
                     }
                     logAction(`${m.uuid.slice(-5)} network ${m.action}`, false);
+                    gameState.players[uuid].hand.forEach(card => {
+                        gameState.deck.shift(card);
+                        logAction(`${m.uuid.slice(-5)} moved a card to the deck`, false);
+                    });
+                    gameState.players[uuid].claimed.forEach(card => {
+                        gameState.deck.shift(card);
+                        logAction(`${m.uuid.slice(-5)} moved a card to the deck`, false);
+                    });
                     break;
                 default:
                     break;
@@ -88,9 +98,21 @@ function setupPubNub() {
 
         updateCardCount();
     };
-
+    /*
+    window.addEventListener('beforeunload', () => {
+        pubnub.disconnect();
+    });
+    */
     // subscribe to the channel
     subscription.subscribe();
+
+    pubnub.setState({
+        state: {
+            uuid: myId,
+            time: Date.now(),
+        },
+        channels: [channelName],
+    });
 };
 
 // paste below "publish message" comment
@@ -112,7 +134,8 @@ function updateUserList() {
     userListElement.innerHTML = ''; // Clear the current list
     userList.forEach(uuid => {
         const listItem = document.createElement('span');
-        listItem.textContent = uuid;  // Display the user's UUID
+        listItem.textContent = uuid.slice(-5);  // Display the user's UUID
+        if (uuid === myId) listItem.style.backgroundColor = 'greenyellow';
         userListElement.appendChild(listItem);
     });
 }

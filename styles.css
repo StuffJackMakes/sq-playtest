@@ -60,7 +60,7 @@ body {
 .card-area > button {
     height: 100%;
     font-size: 1.5rem;
-    padding: 0 10px;
+    padding: 0 4px;
 }
 
 .card-area .draggable-card {
@@ -154,7 +154,7 @@ body {
     color: white;
     padding: 2px 6px;
     border-radius: 4px;
-    font-size: 1.1em;
+    font-size: 0.9em;
     font-weight: bold;
 }
 
@@ -197,10 +197,13 @@ body {
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
 }
 
 #userList span {
-    color: white;
-    font-size: 8px;
+    font-size: 1.5rem;
     padding: 2px 5px;
+    background-color: orange;
+    border-radius: 8px;
+    margin: 5px;
 }

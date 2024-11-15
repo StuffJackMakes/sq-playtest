@@ -1,4 +1,4 @@
-const myId = crypto.randomUUID();
+const myId = getBrowserUUID();
 const myIdShort = myId.slice(-5);
 const gameState = {
     // Array of ID
@@ -45,6 +45,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     updateCardCount();
 });
+
+function getBrowserUUID() {
+    let uuid = localStorage.getItem('browserUUID');
+    if (!uuid) {
+        uuid = crypto.randomUUID();
+        localStorage.setItem('browserUUID', uuid);
+    }
+    return uuid;
+}
 
 async function loadCardIndex(deckName, prefix) {
     const response = await fetch(`${deckName}.tsv`);
