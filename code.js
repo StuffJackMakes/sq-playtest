@@ -43,6 +43,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     setupPubNub();
 
+    setupHotkeys();
+
     updateCardCount();
 });
 
@@ -77,6 +79,13 @@ async function loadCardIndex(deckName, prefix) {
     return cardIndex;
 }
 
+function setupHotkeys() {
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'd' || event.key === 'D') {
+            rollDice();
+        }
+    });
+}
 
 function logAction(action, local=true) {
     if (local) {
@@ -358,6 +367,12 @@ gridCells.forEach(cell => {
 });
 
 
+
+function rollDice() {
+    const diceRoll = Math.floor(Math.random() * 6) + 1;
+    logAction(`rolled a ${diceRoll}`);
+    sendGameState();
+}
 
 function resetGame() {
     const userConfirmed = confirm("This will move all cards back into the deck and shuffle it.\n\nProceed?");
