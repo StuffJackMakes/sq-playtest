@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     monsterCardIndex = await loadCardIndex('monsters', 'm');
     allCardIndex = monsterCardIndex;
 
-    gameState.deck = Object.keys(allCardIndex);
+    loadDeck();
     gameState.players[myId] = {
         hand: [],
         claimed: [],
@@ -79,6 +79,10 @@ async function loadCardIndex(deckName, prefix) {
     return cardIndex;
 }
 
+function loadDeck() {
+    gameState.deck = Object.keys(allCardIndex);
+}
+
 function setupHotkeys() {
     document.addEventListener('keydown', (event) => {
         if (event.key === 'd' || event.key === 'D') {
@@ -109,14 +113,16 @@ function drawCard() {
 }
 
 function removeCardFromNonDeckState(cardId) {
-    const discardIndex = gameState.players[myId].hand.indexOf(cardId);
+    const discardIndex = gameState.discard.indexOf(cardId);
     const handIndex = gameState.players[myId].hand.indexOf(cardId);
     const claimedIndex = gameState.players[myId].claimed.indexOf(cardId);
     if (discardIndex !== -1) {
         gameState.discard.splice(discardIndex, 1);
-    } else if (handIndex !== -1) {
+    }
+    if (handIndex !== -1) {
         gameState.players[myId].hand.splice(handIndex, 1);
-    } else if (claimedIndex !== -1) {
+    }
+    if (claimedIndex !== -1) {
         gameState.players[myId].claimed.splice(claimedIndex, 1);
     }
 
@@ -320,7 +326,7 @@ gridCells.forEach(cell => {
         if (draggedImage) {
             const cardId = draggedImage.id;
             removeCardFromNonDeckState(cardId);
-            gameState.discard.unshift(cardId);
+            gameState.discard.push(cardId);
             logAction(`moved ${allCardIndex[cardId]} to discard`);
             sendGameState();
             area.appendChild(draggedImage);
@@ -340,7 +346,7 @@ gridCells.forEach(cell => {
         if (draggedImage) {
             const cardId = draggedImage.id;
             removeCardFromNonDeckState(cardId);
-            gameState.players[myId].hand.unshift(cardId);
+            gameState.players[myId].hand.push(cardId);
             logAction(`moved ${allCardIndex[cardId]} to hand`);
             sendGameState();
             area.appendChild(draggedImage);
@@ -360,7 +366,7 @@ gridCells.forEach(cell => {
         if (draggedImage) {
             const cardId = draggedImage.id;
             removeCardFromNonDeckState(cardId);
-            gameState.players[myId].claimed.unshift(cardId);
+            gameState.players[myId].claimed.push(cardId);
             logAction(`moved ${allCardIndex[cardId]} to claimed`);
             sendGameState();
             area.appendChild(draggedImage);
@@ -414,6 +420,28 @@ function clearPlayerVisuals() {
     claimedImages.forEach(img => {
         img.remove();
     });
+}
+
+function reloadDeck() {
+    const userConfirmed = confirm("This will remove all cards and reload all cards from the deck.\n\nProceed?");
+
+    if (userConfirmed) {
+        gameState.deck = [];
+        gameState.discard = [];
+        gameState.inPlay = {};
+        for (const playerId in gameState.players) {
+            gameState.players[playerId].hand = [];
+            gameState.players[playerId].claimed = [];
+        }
+
+        clearPlayerVisuals()
+        clearBoardVisuals();
+        loadDeck();
+        updateCardCount();
+        logAction('re-loaded the deck');
+
+        sendGameState();
+    }
 }
 
 function rebuildPlayerVisuals() {
