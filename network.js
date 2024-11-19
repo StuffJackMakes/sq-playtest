@@ -3,7 +3,14 @@ let userList = [];
 const userListElement = document.getElementById('userList');
 let actionLogNextSendIndex = 0;
 
-function setupPubNub() {
+function setupPubNub(fake=false) {
+    if (fake) {
+        pubnub = {
+            publish: () => {},
+        }
+        return void 0;
+    }
+
     // Update this block with your publish/subscribe keys
     pubnub = new PubNub({
         publishKey : "pub-c-7e5b84ad-d795-4968-a55e-fa1cc55f1f10",

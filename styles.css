@@ -30,7 +30,7 @@ body {
 }
 
 .sidebar.small {
-    height: 70vmin;
+    height: 90vmin;
 }
 
 /* Top image styling in the sidebar */
@@ -38,7 +38,7 @@ body {
     width: 100%;
     height: auto;
     object-fit: contain;
-    margin-bottom: 20px;
+    margin-bottom: 4px;
     aspect-ratio: 1/1;
 }
 
@@ -81,6 +81,11 @@ body {
     background-color: #fff;
 }
 
+#discardArea {
+    flex-wrap: wrap;
+    overflow-y: scroll;
+}
+
 /* Text area for accumulated information */
 #infoArea {
     width: 100%;
@@ -99,9 +104,9 @@ body {
     display: grid;
     grid-template-columns: repeat(10, 1fr); /* 10 columns */
     grid-template-rows: repeat(10, 1fr); /* 10 rows */
-    gap: 5px; /* Spacing between images */
-    width: 70vmin; /* Ensures grid fits within viewport */
-    height: 70vmin; /* Keeps grid square */
+    gap: 0px; /* Spacing between images */
+    width: 90vmin; /* Ensures grid fits within viewport */
+    height: 90vmin; /* Keeps grid square */
 }
 
 .grid-cell {
@@ -154,7 +159,7 @@ body {
     color: white;
     padding: 2px 6px;
     border-radius: 4px;
-    font-size: 0.9em;
+    font-size: 1em;
     font-weight: bold;
 }
 
@@ -163,18 +168,20 @@ body {
 
 
 /* Button container below the grid, absolutely positioned at the bottom of the window */
+/*
 .button-container {
     position: absolute;
     top: 0;
     right: 0;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: right;
     padding: 10px;
     height: 10vh;
 }
+*/
 
 /* Style for each button */
-.button-container > button {
+.soloBtn {
     padding: 10px;
     font-size: 1rem;
     background-color: #007BFF;
@@ -182,11 +189,7 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.action-button:hover {
-    background-color: #0056b3;
+    margin: 4px 0;
 }
 
 

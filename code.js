@@ -108,10 +108,13 @@ function drawCard() {
     createDraggableCard(drawnCard, handArea);
 }
 
-function removeFromHandClaimedInPlay(cardId) {
+function removeCardFromNonDeckState(cardId) {
+    const discardIndex = gameState.players[myId].hand.indexOf(cardId);
     const handIndex = gameState.players[myId].hand.indexOf(cardId);
     const claimedIndex = gameState.players[myId].claimed.indexOf(cardId);
-    if (handIndex !== -1) {
+    if (discardIndex !== -1) {
+        gameState.discard.splice(discardIndex, 1);
+    } else if (handIndex !== -1) {
         gameState.players[myId].hand.splice(handIndex, 1);
     } else if (claimedIndex !== -1) {
         gameState.players[myId].claimed.splice(claimedIndex, 1);
@@ -257,7 +260,7 @@ gridCells.forEach(cell => {
             const previousDamage = gameState.inPlay[imageId]?.[2] ?? 0;
             const draggedImage = document.getElementById(imageId);
             cell.appendChild(draggedImage);
-            removeFromHandClaimedInPlay(imageId);
+            removeCardFromNonDeckState(imageId);
             const coords = cell.id.split(',');
             gameState.inPlay[imageId] = [coords[0], coords[1], previousDamage];
             draggedImage.setDamageText(previousDamage);
@@ -296,7 +299,7 @@ gridCells.forEach(cell => {
         
         if (draggedImage) {
             const cardId = draggedImage.id;
-            removeFromHandClaimedInPlay(cardId);
+            removeCardFromNonDeckState(cardId);
             gameState.deck.unshift(cardId);
             logAction(`moved ${allCardIndex[cardId]} to deck`);
             sendGameState();
@@ -316,11 +319,11 @@ gridCells.forEach(cell => {
         
         if (draggedImage) {
             const cardId = draggedImage.id;
-            removeFromHandClaimedInPlay(cardId);
+            removeCardFromNonDeckState(cardId);
             gameState.discard.unshift(cardId);
             logAction(`moved ${allCardIndex[cardId]} to discard`);
             sendGameState();
-            draggedImage.remove();
+            area.appendChild(draggedImage);
             updateCardCount();
         }
     });
@@ -336,7 +339,7 @@ gridCells.forEach(cell => {
         
         if (draggedImage) {
             const cardId = draggedImage.id;
-            removeFromHandClaimedInPlay(cardId);
+            removeCardFromNonDeckState(cardId);
             gameState.players[myId].hand.unshift(cardId);
             logAction(`moved ${allCardIndex[cardId]} to hand`);
             sendGameState();
@@ -356,7 +359,7 @@ gridCells.forEach(cell => {
         
         if (draggedImage) {
             const cardId = draggedImage.id;
-            removeFromHandClaimedInPlay(cardId);
+            removeCardFromNonDeckState(cardId);
             gameState.players[myId].claimed.unshift(cardId);
             logAction(`moved ${allCardIndex[cardId]} to claimed`);
             sendGameState();
@@ -399,6 +402,10 @@ function resetGame() {
 }
 
 function clearPlayerVisuals() {
+    discardImages = discardArea.querySelectorAll('.draggable-card');
+    discardImages.forEach(img => {
+        img.remove();
+    });
     handImages = handArea.querySelectorAll('.draggable-card');
     handImages.forEach(img => {
         img.remove();
@@ -410,6 +417,9 @@ function clearPlayerVisuals() {
 }
 
 function rebuildPlayerVisuals() {
+    for (const cardId of gameState.discard) {
+        createDraggableCard(cardId, discardArea);
+    }
     for (const cardId of gameState.players[myId].hand) {
         createDraggableCard(cardId, handArea);
     }
