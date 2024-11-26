@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     claimed: [],
   };
 
-  setupPubNub();
+  setupPubNub(true);
 
   setupHotkeys();
 
@@ -410,7 +410,11 @@ function resetGame(useTerrain = true) {
     clearPlayerVisuals()
     clearBoardVisuals();
     updateCardCount();
-    logAction('reset the game');
+    if (useTerrain) {
+      logAction('reset the game with terrain');
+    } else {
+      logAction('reset the game without terrain');
+    }
 
     shuffleDeck(); // This resets the game state
   }
