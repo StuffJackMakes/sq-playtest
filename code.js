@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     claimed: [],
   };
 
-  setupPubNub(true);
+  setupPubNub();
 
   setupHotkeys();
 
