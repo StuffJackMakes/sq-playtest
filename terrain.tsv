@@ -1,15 +1,15 @@
-Name	#	Rules	Has Art
-Shouting Match		Damage from all attacks is ignored unless they are battlecry attacks	Y
-Echo-y Cave		Whenever an adjacent card performs a battlecry, it may perform it again for an additional +1 damage	Y
-Pain Portal		When an adjacent card takes damage, all other cards adjacent to this card take that much damage	Y
-Capture the Flag		At the beginning of each turn if the active player controls all adjacent creatures, [Claim] this card	Y
-Super Hi Way		Cards adjacent to this card are adjacent to adjacent cards	Y
-You Are Here		In the case of a [Rumpus], this card will always be the core regardless of chunk size	Y
-False North		When this card enters play, [Eject] all other cards	Y
-Trebu-pult		If a card would swap position with this card, it takes 2 [Hurt] and is [Ejected]	Y
-Breathing Room		Whenever an adjacent card takes damage and is not defeated, swap its position with this card.	Y
-Toll Booth		When any card moves into this card's position, it takes 2 damage.	Y
-Welcome Mat		When any card enters the scrum [Replace] this card with that card.	Y
-Orb of Compulsion		All 'may' options become 'must'.	Y
-Tar Pit		Adjacent cards can not move away from this card	Y
-Judgement Day		When this card enters play, [Scatter] all cards in play that have performed an attack this game	Y
+Name	#	Rules	HP	Has Art
+Shouting Match		Damage from all attacks is ignored unless they are battlecry attacks	6	Y
+Echo-y Cave		Whenever an adjacent card performs a battlecry, it may perform it again for an additional +1 damage	6	Y
+Pain Portal		When an adjacent card takes damage, all other cards adjacent to this card take that much damage	6	Y
+Capture the Flag		At the beginning of each turn if the active player controls all adjacent creatures, [Claim] this card	8	Y
+Super Hi Way		Cards adjacent to this card are adjacent to adjacent cards	8	Y
+You Are Here		In the case of a [Rumpus], this card will always be the core regardless of chunk size	10	Y
+False North		When this card enters play, [Eject] all other cards	2	Y
+Trebu-pult		If a card would swap position with this card, it takes 2 [Hurt] and is [Ejected]	4	Y
+Breathing Room		Whenever an adjacent card takes damage and is not defeated, swap its position with this card.	4	Y
+Toll Booth		When any card moves into this card's position, it takes 2 damage.	8	Y
+Welcome Mat		When any card enters the scrum [Replace] this card with that card.	4	Y
+Orb of Compulsion		All 'may' options become 'must'.	6	Y
+Tar Pit		Adjacent cards can not move away from this card	4	Y
+Judgement Day		At the end of every turn [Scatter] all cards in play that have performed an attack this game	4	Y
