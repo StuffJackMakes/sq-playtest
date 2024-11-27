@@ -11,115 +11,120 @@ function setupPubNub(fake = false) {
     return void 0;
   }
 
-  // Update this block with your publish/subscribe keys
-  pubnub = new PubNub({
-    publishKey: "pub-c-7e5b84ad-d795-4968-a55e-fa1cc55f1f10",
-    subscribeKey: "sub-c-1f2615e8-28f3-408e-b82a-712c5a90c2dc",
-    userId: myId,
-  });
+  try {
+    // Update this block with your publish/subscribe keys
+    pubnub = new PubNub({
+      publishKey: "pub-c-25da488a-1e79-43e7-8d98-903f86aaee37",
+      subscribeKey: "sub-c-d28f94ba-d667-45bb-81cb-26ce6ee25a60",
+      userId: myId,
+    });
 
-  // create a local channel entity
-  const channel = pubnub.channel(channelName);
-  // create a subscription on the channel
-  const subscription = channel.subscription({ receivePresenceEvents: true });
+    // create a local channel entity
+    const channel = pubnub.channel(channelName);
+    // create a subscription on the channel
+    const subscription = channel.subscription({ receivePresenceEvents: true });
 
-  // Handle user presence events (join, leave)
-  pubnub.addListener({
-    presence: function (m) {
-      switch (m.action) {
-        case 'join':
-          logAction(`${m.uuid.slice(-5)} network ${m.action}`, false);
-          if (m.uuid !== myId) sendGameState();
-        case 'state-change':
-          if (!userList.includes(m.uuid)) {
-            userList.push(m.uuid);
+    // Handle user presence events (join, leave)
+    pubnub.addListener({
+      presence: function (m) {
+        switch (m.action) {
+          case 'join':
+            logAction(`${m.uuid.slice(-5)} network ${m.action}`, false);
+            if (m.uuid !== myId) sendGameState();
+          case 'state-change':
+            if (!userList.includes(m.uuid)) {
+              userList.push(m.uuid);
 
-            pubnub.setState({
-              state: {
-                uuid: myId,
-                time: Date.now(),
-              },
-              channels: [channelName],
+              pubnub.setState({
+                state: {
+                  uuid: myId,
+                  time: Date.now(),
+                },
+                channels: [channelName],
+              });
+            }
+            break;
+          case 'leave':
+          case 'timeout':
+            if (userList.includes(m.uuid)) {
+              userList.splice(userList.indexOf(m.uuid), 1);
+            }
+            logAction(`${m.uuid.slice(-5)} network ${m.action}`, false);
+            gameState.players[uuid].hand.forEach(card => {
+              gameState.deck.shift(card);
+              logAction(`${m.uuid.slice(-5)} moved a card to the deck`, false);
             });
+            gameState.players[uuid].claimed.forEach(card => {
+              gameState.deck.shift(card);
+              logAction(`${m.uuid.slice(-5)} moved a card to the deck`, false);
+            });
+            break;
+          default:
+            break;
+        }
+
+        updateUserList();
+      }
+    });
+
+    // add an onMessage listener to the channel subscription
+    subscription.onMessage = (msg) => {
+      if (msg.publisher === myId || typeof msg.message === 'undefined') return;
+
+      const m = msg.message;
+
+      const newGameState = m.data;
+
+      switch (m.category) {
+        case 'gameState':
+          let rebuildPlayerVis = false;
+          let rebuildBoardVis = false;
+          if (typeof newGameState.players[myId] === 'undefined') {
+            newGameState.players[myId] = gameState.players[myId];
           }
-          break;
-        case 'leave':
-        case 'timeout':
-          if (userList.includes(m.uuid)) {
-            userList.splice(userList.indexOf(m.uuid), 1);
+          if (newGameState.players[myId].hand != gameState.players[myId].hand || newGameState.players[myId].claimed != gameState.players[myId].claimed) {
+            clearPlayerVisuals();
+            rebuildPlayerVis = true;
           }
-          logAction(`${m.uuid.slice(-5)} network ${m.action}`, false);
-          gameState.players[uuid].hand.forEach(card => {
-            gameState.deck.shift(card);
-            logAction(`${m.uuid.slice(-5)} moved a card to the deck`, false);
-          });
-          gameState.players[uuid].claimed.forEach(card => {
-            gameState.deck.shift(card);
-            logAction(`${m.uuid.slice(-5)} moved a card to the deck`, false);
-          });
-          break;
-        default:
+          if (!isInPlayIdentical(newGameState.inPlay)) {
+            clearBoardVisuals();
+            rebuildBoardVis = true;
+          }
+          gameState.deck = newGameState.deck;
+          gameState.discard = newGameState.discard;
+          gameState.inPlay = newGameState.inPlay;
+          gameState.players = newGameState.players;
+          if (rebuildPlayerVis) rebuildPlayerVisuals();
+          if (rebuildBoardVis) rebuildBoardVisuals();
+          updateCardCount();
           break;
       }
 
-      updateUserList();
-    }
-  });
+      for (const log of m.logs) {
+        logAction(log, false);
+      }
 
-  // add an onMessage listener to the channel subscription
-  subscription.onMessage = (msg) => {
-    if (msg.publisher === myId || typeof msg.message === 'undefined') return;
+      updateCardCount();
+    };
+    /*
+    window.addEventListener('beforeunload', () => {
+        pubnub.disconnect();
+    });
+    */
+    // subscribe to the channel
+    subscription.subscribe();
 
-    const m = msg.message;
+    pubnub.setState({
+      state: {
+        uuid: myId,
+        time: Date.now(),
+      },
+      channels: [channelName],
+    });
 
-    const newGameState = m.data;
-
-    switch (m.category) {
-      case 'gameState':
-        let rebuildPlayerVis = false;
-        let rebuildBoardVis = false;
-        if (typeof newGameState.players[myId] === 'undefined') {
-          newGameState.players[myId] = gameState.players[myId];
-        }
-        if (newGameState.players[myId].hand != gameState.players[myId].hand || newGameState.players[myId].claimed != gameState.players[myId].claimed) {
-          clearPlayerVisuals();
-          rebuildPlayerVis = true;
-        }
-        if (!isInPlayIdentical(newGameState.inPlay)) {
-          clearBoardVisuals();
-          rebuildBoardVis = true;
-        }
-        gameState.deck = newGameState.deck;
-        gameState.discard = newGameState.discard;
-        gameState.inPlay = newGameState.inPlay;
-        gameState.players = newGameState.players;
-        if (rebuildPlayerVis) rebuildPlayerVisuals();
-        if (rebuildBoardVis) rebuildBoardVisuals();
-        updateCardCount();
-        break;
-    }
-
-    for (const log of m.logs) {
-      logAction(log, false);
-    }
-
-    updateCardCount();
-  };
-  /*
-  window.addEventListener('beforeunload', () => {
-      pubnub.disconnect();
-  });
-  */
-  // subscribe to the channel
-  subscription.subscribe();
-
-  pubnub.setState({
-    state: {
-      uuid: myId,
-      time: Date.now(),
-    },
-    channels: [channelName],
-  });
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 // paste below "publish message" comment
